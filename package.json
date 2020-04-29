@@ -1,0 +1,70 @@
+{
+  "name": "@pleasure-js/utils-v2",
+  "author": "Martin Rafael Gonzalez <tin@devtin.io>",
+  "version": "1.0.0",
+  "main": "dist/utils-v2.js",
+  "module": "dist/utils-v2.esm.js",
+  "license": "MIT",
+  "scripts": {
+    "build": "yarn build:lib && yarn build:docs && yarn build:readme",
+    "build:lib": "rollup -c",
+    "build:docs": "jsdoc2md --template DOCS.hbs --files dist/utils-v2.js > DOCS.md",
+    "build:readme": "pls docs readme --template README.hbs > README.md",
+    "build:live": "nodemon -w src --exec yarn build",
+    "lint": "eslint --ext .js --ignore-path .gitignore src/",
+    "test": "NODE_ENV=test ava --serial --verbose",
+    "test:unit": "yarn test src/**/*.unit.js",
+    "test:all": "NODE_ENV=test ava --serial --verbose"
+  },
+  "files": [
+    "dist/*"
+  ],
+  "devDependencies": {
+    "@ava/babel": "^1.0.1",
+    "ava": "^3.3.0",
+    "babel-eslint": "^10.0.3",
+    "eslint": "^6.8.0",
+    "esm": "^3.2.25",
+    "jsdoc-to-markdown": "^5.0.3",
+    "nodemon": "^2.0.2",
+    "nyc": "^15.0.0",
+    "rollup": "^1.31.0",
+    "rollup-plugin-alias": "^2.2.0",
+    "rollup-plugin-babel-minify": "^9.1.1",
+    "rollup-plugin-commonjs": "^10.1.0",
+    "rollup-plugin-json": "^4.0.0",
+    "standard-version": "^7.1.0"
+  },
+  "ava": {
+    "files": [
+      "test/**/*.test.js",
+      "src/**/*.unit.js"
+    ],
+    "require": [
+      "esm"
+    ],
+    "babel": true
+  },
+  "eslintConfig": {
+    "extends": "eslint:recommended",
+    "parser": "babel-eslint",
+    "env": {
+      "es6": true
+    },
+    "globals": {
+      "BigInt": true
+    },
+    "parserOptions": {
+      "ecmaVersion": 2018,
+      "sourceType": "module"
+    }
+  },
+  "standard-version": {
+    "scripts": {
+      "precommit": "git add -f coverage"
+    }
+  },
+  "dependencies": {
+    "lodash": "^4.17.15"
+  }
+}
