@@ -1,2 +1,2 @@
-@pleasure-js/cli 1.0.1
-running local version of @pleasure-js/cli
+? Pick a command (Use arrow keys)
+[0D

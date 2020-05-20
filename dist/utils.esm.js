@@ -1,26 +1,19 @@
 /*!
- * @pleasure-js/utils-v2 v1.0.0
+ * @pleasure-js/utils v1.0.0
  * (c) 2020-2020 Martin Rafael Gonzalez <tin@devtin.io>
  * MIT
  */
-'use strict';
+import fs, { existsSync } from 'fs';
+import util from 'util';
+import castArray from 'lodash/castArray';
+import flattenDeep from 'lodash/flattenDeep';
+import each from 'lodash/each';
+import path from 'path';
+import merge from 'deepmerge';
 
-Object.defineProperty(exports, '__esModule', { value: true });
+const readdirAsync = util.promisify(fs.readdir);
 
-function _interopDefault (ex) { return (ex && (typeof ex === 'object') && 'default' in ex) ? ex['default'] : ex; }
-
-var fs = require('fs');
-var fs__default = _interopDefault(fs);
-var util = _interopDefault(require('util'));
-var castArray = _interopDefault(require('lodash/castArray'));
-var flattenDeep = _interopDefault(require('lodash/flattenDeep'));
-var each = _interopDefault(require('lodash/each'));
-var path = _interopDefault(require('path'));
-var merge = _interopDefault(require('deepmerge'));
-
-const readdirAsync = util.promisify(fs__default.readdir);
-
-const lstat = util.promisify(fs__default.lstat);
+const lstat = util.promisify(fs.lstat);
 
 /**
  * Deep scans the given `directory` returning an array of strings of all of the files found in the given `directory`.
@@ -98,7 +91,7 @@ async function deepScanDir (directory, { exclude = [/node_modules/], filter, onl
 function findPackageJson (dir = process.cwd()) {
   const local = path.join(dir, 'package.json');
 
-  if (!fs.existsSync(local)) {
+  if (!existsSync(local)) {
     if (dir === '/') {
       return ''
     }
@@ -169,24 +162,17 @@ const ProjectConfig = {
 
 function getConfig () {
   const configFile = findConfig();
-  return merge.all([{}, ProjectConfig, fs__default.existsSync(configFile) ? (require(configFile).default || require(configFile)) : {}])
+  return merge.all([{}, ProjectConfig, fs.existsSync(configFile) ? (require(configFile).default || require(configFile)) : {}])
 }
 
 function packageJson () {
   const file = findRoot('./package.json');
 
-  if (!fs__default.existsSync(file)) {
+  if (!fs.existsSync(file)) {
     return {}
   }
 
   return require(file)
 }
 
-exports.ProjectConfig = ProjectConfig;
-exports.deepScanDir = deepScanDir;
-exports.findConfig = findConfig;
-exports.findPackageJson = findPackageJson;
-exports.findRoot = findRoot;
-exports.getConfig = getConfig;
-exports.packageJson = packageJson;
-exports.readdirAsync = readdirAsync;
+export { ProjectConfig, deepScanDir, findConfig, findPackageJson, findRoot, getConfig, packageJson, readdirAsync };
