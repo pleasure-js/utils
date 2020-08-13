@@ -66,6 +66,6 @@
   },
   "dependencies": {
     "@devtin/schema-validator": "^2.9.0",
-    "lodash": "^4.17.15"
+    "lodash": "^4.17.19"
   }
 }
