@@ -16,7 +16,7 @@ var castArray = _interopDefault(require('lodash/castArray'));
 var flattenDeep = _interopDefault(require('lodash/flattenDeep'));
 var each = _interopDefault(require('lodash/each'));
 var path = _interopDefault(require('path'));
-var merge = _interopDefault(require('deepmerge'));
+var schemaValidator = require('@devtin/schema-validator');
 
 const readdirAsync = util.promisify(fs__default.readdir);
 
@@ -91,22 +91,35 @@ async function deepScanDir (directory, { exclude = [/node_modules/], filter, onl
 }
 
 /**
+ * Finds given `pathName` in given `dir`. Will look for parent dirs of given `dir` until found or `/` is reached.
+ *
+ * @param {String} dir=process.cwd()
+ * @param {String} pathName
+ * @return {String|void} path to the nearest file or `void` if none found
+ */
+function findNearestAvailablePath (dir, pathName) {
+  dir = dir || process.cwd();
+  const local = path.join(dir, pathName);
+
+  if (!fs.existsSync(local)) {
+    if (dir === '/') {
+      return
+    }
+
+    return findNearestAvailablePath(path.join(dir, '../'), pathName)
+  }
+
+  return local
+}
+
+/**
  * Finds package.json file in given dir or nearest found in parent directories
  * @param {String} [dir=process.cwd()]
  * @return {String} path to the nearest package.json
  */
+
 function findPackageJson (dir = process.cwd()) {
-  const local = path.join(dir, 'package.json');
-
-  if (!fs.existsSync(local)) {
-    if (dir === '/') {
-      return ''
-    }
-
-    return findPackageJson(path.join(dir, '../'))
-  }
-
-  return local
+  return findNearestAvailablePath(dir, 'package.json')
 }
 
 /**
@@ -125,7 +138,7 @@ function findPackageJson (dir = process.cwd()) {
  * ```
  */
 function findRoot (...paths) {
-  return path.resolve(process.env.PLEASURE_ROOT || path.dirname(findPackageJson()), ...paths)
+  return path.resolve(process.env.PLEASURE_ROOT || path.dirname(findNearestAvailablePath(process.cwd(), './pleasure.config.js') || findPackageJson()), ...paths)
 }
 
 /**
@@ -136,40 +149,64 @@ function findConfig () {
   return process.env.PLEASURE_CONFIG || findRoot('pleasure.config.js')
 }
 
-/**
- * @typedef {Object} ProjectConfig
- * @property {Object} http - http orchestration configuration
- * @property {String} [http.host=0.0.0.0] - http orchestration configuration
- * @property {Number} [http.port=3000] - port where to run the http server
- * @property {Number} [api.dir=api] - relative path to the api folder to use
- */
-const ProjectConfig = {
+const ProjectConfig = new schemaValidator.Schema({
   config: {
     http: {
-      host: '0.0.0.0',
-      port: 3000
+      host: {
+        type: String,
+        default: '0.0.0.0'
+      },
+      port: {
+        type: Number,
+        default: 3000
+      }
     },
     api: {
-      dir: 'api/',
-      prefix: '/api',
+      dir: {
+        type: String,
+        default: 'api/',
+        // description: 'Relative path to the api folder to use'
+      },
+      prefix: {
+        type: String,
+        default: '/api'
+      },
       flux: {
-        join: null,
-        deliver: null
+        join: {
+          type: Function,
+          allowNull: true,
+          default: null
+        },
+        deliver: {
+          type: Function,
+          allowNull: true,
+          default: null
+        }
       }
     },
     entities: {
-      dir: 'entities/',
-      prefix: '/entities'
+      dir: {
+        type: String,
+        default: 'entities/'
+      },
+      prefix: {
+        type: String,
+        default: '/entities'
+      }
     },
     plugins: {
-      dir: 'plugins/'
+      dir: {
+        type: String,
+        default: 'plugins/'
+      }
     }
   }
-};
+});
 
 function getConfig () {
+  require = require('esm')(module);
   const configFile = findConfig();
-  return merge.all([{}, ProjectConfig, fs__default.existsSync(configFile) ? (require(configFile).default || require(configFile)) : {}])
+  return ProjectConfig.parse(fs__default.existsSync(configFile) ? (require(configFile).default || require(configFile)) : {})
 }
 
 function packageJson () {
@@ -182,10 +219,21 @@ function packageJson () {
   return require(file)
 }
 
-exports.ProjectConfig = ProjectConfig;
+/**
+ * Finds package.json file in given dir or nearest found in parent directories
+ * @param {String} [dir=process.cwd()]
+ * @return {String} path to the nearest package.json
+ */
+
+function findPleasureConfig (dir = process.cwd()) {
+  return findNearestAvailablePath(dir, 'pleasure.config.js')
+}
+
 exports.deepScanDir = deepScanDir;
 exports.findConfig = findConfig;
+exports.findNearestAvailablePath = findNearestAvailablePath;
 exports.findPackageJson = findPackageJson;
+exports.findPleasureConfig = findPleasureConfig;
 exports.findRoot = findRoot;
 exports.getConfig = getConfig;
 exports.packageJson = packageJson;

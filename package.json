@@ -6,7 +6,7 @@
   "module": "dist/utils.esm.js",
   "license": "MIT",
   "scripts": {
-    "build": "yarn build:lib && yarn build:docs && yarn build:readme",
+    "build": "yarn build:lib",
     "build:lib": "rollup -c",
     "build:docs": "jsdoc2md --template DOCS.hbs --files dist/utils.js > DOCS.md",
     "build:readme": "pls docs readme --template README.hbs > README.md",
@@ -65,6 +65,7 @@
     }
   },
   "dependencies": {
+    "@devtin/schema-validator": "^2.9.0",
     "lodash": "^4.17.15"
   }
 }

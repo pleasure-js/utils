@@ -4,6 +4,9 @@
 <dt><a href="#deepScanDir">deepScanDir(directory, [exclude], [only], [filter])</a> ⇒ <code>Promise.&lt;Array.&lt;String&gt;&gt;</code></dt>
 <dd><p>Deep scans the given <code>directory</code> returning an array of strings of all of the files found in the given <code>directory</code>.</p>
 </dd>
+<dt><a href="#findNearestAvailablePath">findNearestAvailablePath(dir, pathName)</a> ⇒ <code>String</code> | <code>void</code></dt>
+<dd><p>Finds given <code>pathName</code> in given <code>dir</code>. Will look for parent dirs of given <code>dir</code> until found or <code>/</code> is reached.</p>
+</dd>
 <dt><a href="#findPackageJson">findPackageJson([dir])</a> ⇒ <code>String</code></dt>
 <dd><p>Finds package.json file in given dir or nearest found in parent directories</p>
 </dd>
@@ -12,6 +15,9 @@
 </dd>
 <dt><a href="#findConfig">findConfig()</a> ⇒ <code>String</code></dt>
 <dd><p>Locates the pleasure.config.js file. Alternatively returns the env variable PLEASURE_CONFIG if set.</p>
+</dd>
+<dt><a href="#findPleasureConfig">findPleasureConfig([dir])</a> ⇒ <code>String</code></dt>
+<dd><p>Finds package.json file in given dir or nearest found in parent directories</p>
 </dd>
 </dl>
 
@@ -36,6 +42,19 @@ Deep scans the given `directory` returning an array of strings of all of the fil
 | [exclude] | <code>Array.&lt;String&gt;</code> \| <code>Array.&lt;RegExp&gt;</code> | <code>[/node_modules/]</code> | Paths to exclude |
 | [only] | <code>Array.&lt;String&gt;</code> \| <code>Array.&lt;RegExp&gt;</code> | <code>[]</code> | If present, only paths matching at least one of the expressions, would be included. |
 | [filter] | <code>function</code> |  | Callback function called with the evaluated `path` as the first argument. Must return `true` or `false` |
+
+<a name="findNearestAvailablePath"></a>
+
+## findNearestAvailablePath(dir, pathName) ⇒ <code>String</code> \| <code>void</code>
+Finds given `pathName` in given `dir`. Will look for parent dirs of given `dir` until found or `/` is reached.
+
+**Kind**: global function  
+**Returns**: <code>String</code> \| <code>void</code> - path to the nearest file or `void` if none found  
+
+| Param | Type | Default |
+| --- | --- | --- |
+| dir | <code>String</code> | <code>process.cwd()</code> | 
+| pathName | <code>String</code> |  | 
 
 <a name="findPackageJson"></a>
 
@@ -77,6 +96,18 @@ Locates the pleasure.config.js file. Alternatively returns the env variable PLEA
 
 **Kind**: global function  
 **Returns**: <code>String</code> - pleasure config found  
+<a name="findPleasureConfig"></a>
+
+## findPleasureConfig([dir]) ⇒ <code>String</code>
+Finds package.json file in given dir or nearest found in parent directories
+
+**Kind**: global function  
+**Returns**: <code>String</code> - path to the nearest package.json  
+
+| Param | Type | Default |
+| --- | --- | --- |
+| [dir] | <code>String</code> | <code>process.cwd()</code> | 
+
 <a name="ProjectConfig"></a>
 
 ## ProjectConfig : <code>Object</code>

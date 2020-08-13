@@ -6,6 +6,6 @@ import { findNearestAvailablePath } from './find-nearest-available-path'
  * @return {String} path to the nearest package.json
  */
 
-export function findPackageJson (dir = process.cwd()) {
-  return findNearestAvailablePath(dir, 'package.json')
+export function findPleasureConfig (dir = process.cwd()) {
+  return findNearestAvailablePath(dir, 'pleasure.config.js')
 }

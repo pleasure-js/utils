@@ -1,4 +1,6 @@
 import path from 'path'
+import fs from 'fs'
+import { findNearestAvailablePath } from './find-nearest-available-path'
 import { findPackageJson } from './find-package-json.js'
 
 /**
@@ -17,5 +19,5 @@ import { findPackageJson } from './find-package-json.js'
  * ```
  */
 export function findRoot (...paths) {
-  return path.resolve(process.env.PLEASURE_ROOT || path.dirname(findPackageJson()), ...paths)
+  return path.resolve(process.env.PLEASURE_ROOT || path.dirname(findNearestAvailablePath(process.cwd(), './pleasure.config.js') || findPackageJson()), ...paths)
 }
